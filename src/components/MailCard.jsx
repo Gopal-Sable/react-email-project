@@ -1,15 +1,19 @@
 import React from "react";
+import ProfileName from "./ProfileName";
 
-const MailCard = ({ data }) => {
-    const { id, from, date, subject, short_description } = data;
+const MailCard = ({ data, handleClick, active }) => {
+    const { id, from, date, subject, short_description, read, favorite } = data;
     return (
         <div
-            className="flex m-2 border rounded-xl border-[var(--accent)] p-2"
+            className={`cursor-pointer flex m-2 border ${
+                read ? "bg-[var(--read-bg)]" : "bg-white"
+            } rounded-xl ${
+                active ? "border-[var(--accent)]" : "border-[var(--border)]"
+            } p-4`}
             id={id}
+            onClick={() => handleClick(data)}
         >
-            <div className="bg-[var(--accent)] flex items-center justify-center px-4 py-2 m-2 h-[40px] border rounded-full">
-                {from.name.slice(0, 1).toUpperCase()}
-            </div>
+            <ProfileName name={from.name} />
             <ul>
                 <li>
                     <label htmlFor="">From: </label>
@@ -21,11 +25,20 @@ const MailCard = ({ data }) => {
                     <label htmlFor="">Subject: </label>
                     <strong>{subject}</strong>
                 </li>
-                <li>{short_description}</li>
-                <li>
-                    {new Date(date).toDateString()}
-                    <span className=" text-[var(--accent)] font-bold">
-                        Foverite
+                <li>{short_description.slice(0, 45) + "..."}</li>
+                <li className="flex justify-between">
+                    <span>
+                        {new Date(date).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                        })}
+                    </span>
+                    <span className="text-[var(--accent)] font-bold">
+                        {favorite && "Favorite"}
                     </span>
                 </li>
             </ul>

@@ -2,17 +2,25 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import FilterButton from "./components/FilterButton";
 import MailCard from "./components/MailCard";
-import { EMAIL_BY_ID_URL, EMAIL_URL } from "../util/constVariables";
+import { EMAIL_URL } from "../util/constVariables";
 import MailBody from "./components/MailBody";
 
 function App() {
+    const [mailBodyData, setMailBodyData] = useState(null);
     const [mails, setMails] = useState([]);
+    const [filterData, setFilterData] = useState([]);
+    const [filterBtn, setFilterBtn] = useState("all");
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await fetch(EMAIL_URL);
                 const data = await res.json();
-                setMails(data);
+                const dataAdded = data.list.map((mail, i) => {
+                    return { ...mail, favorite: false, read: false };
+                });
+
+                setMails({ list: [...dataAdded] });
+                setFilterData({ list: [...dataAdded] });
             } catch (error) {
                 console.log(error);
             }
@@ -20,23 +28,119 @@ function App() {
         fetchData();
     }, []);
 
+    const changeTofavorite = (id) => {
+        let newMails = mails.list.map((mail) => {
+            if (mail.id == id) {
+                return { ...mail, favorite: true };
+            } else {
+                return { ...mail };
+            }
+        });
+        let newfilterData = filterData.list.map((mail) => {
+            if (mail.id === id) {
+                return { ...mail, favorite: true };
+            }
+            return { ...mail };
+        });
+        setFilterData({ list: [...newfilterData] });
+        setMails({ list: [...newMails] });
+    };
+    function openMailBody(data) {
+        let newMails = mails.list.map((mail) => {
+            if (data.id === mail.id) {
+                return { ...mail, read: true };
+            }
+            return { ...mail };
+        });
+        let newfilterData = filterData.list.map((mail) => {
+            if (data.id === mail.id) {
+                return { ...mail, read: true };
+            }
+            return { ...mail };
+        });
+        setMails({ list: [...newMails] });
+        setFilterData({ list: [...newfilterData] });
+        setMailBodyData(data);
+    }
+    const handleFilterClick = (filterType) => {
+        if (filterType === "Read") {
+            let newMails = mails.list.filter((mail) => mail.read);
+            setFilterData({ list: [...newMails] });
+            setFilterBtn("read");
+        } else if (filterType === "Favorites") {
+            let newMails = mails.list.filter((mail) => mail.favorite);
+            setFilterData({ list: [...newMails] });
+            setFilterBtn("favorite");
+        } else if (filterType === "Unread") {
+            let newMails = mails.list.filter((mail) => !mail.read);
+            setFilterData({ list: [...newMails] });
+            setFilterBtn("unread");
+        } else {
+            let newMails = { ...mails };
+            setFilterData(newMails);
+            setFilterBtn("all");
+        }
+    };
     return (
         <>
-            <div id="filter-contianer" className="flex items-center">
+            <div id="filter-container" className="flex items-center mx-6 my-2">
                 <p>Filter By:</p>
-                <div className="flex gap-2px items-center justify-center ">
-                    <FilterButton name="Unread" />
-                    <FilterButton name="Read" />
-                    <FilterButton name="Favorites" />
+                <div className="flex gap-2px items-center justify-center">
+                    <FilterButton
+                        name="All"
+                        handleClick={handleFilterClick}
+                        active={filterBtn==="all"}
+                    />
+                    <FilterButton
+                        name="Unread"
+                        handleClick={handleFilterClick}
+                        active={filterBtn==="unread"}
+                    />
+                    <FilterButton
+                        name="Read"
+                        handleClick={handleFilterClick}
+                        active={filterBtn==="read"}
+                    />
+                    <FilterButton
+                        name="Favorites"
+                        handleClick={handleFilterClick}
+                        active={filterBtn==="favorite"}
+                    />
                 </div>
             </div>
-            <div id="main" className="grid grid-cols-[30%,70%] m-2 h-screen">
-                <div id="email-list" className="flex flex-col bg-[var(--bg)]">
-                    {mails?.list?.map((mail) => (
-                        <MailCard key={mail.id} data={mail} />
-                    ))}
+
+            <div
+                id="main"
+                className={`m-2 h-screen ${
+                    mailBodyData ? "grid lg:grid-cols-[30%_70%] md:grid-cols-[40%_60%]" : ""
+                }`}
+            >
+                {/* Email List (Scrollable) */}
+                <div
+                    id="email-list"
+                    className="flex m-2 flex-col bg-[var(--bg)] h-full overflow-auto"
+                >
+                    {filterData?.list?.length > 0 ? (
+                        filterData?.list?.map((mail) => (
+                            <MailCard
+                                key={mail.id}
+                                data={mail}
+                                active={mailBodyData?.id === mail.id}
+                                handleClick={openMailBody}
+                            />
+                        ))
+                    ) : (
+                        <>No mail found</>
+                    )}
                 </div>
-                <MailBody data={1} />
+
+                {/* Mail Body */}
+                {mailBodyData && (
+                    <MailBody
+                        data={mailBodyData}
+                        handleFavorite={changeTofavorite}
+                    />
+                )}
             </div>
         </>
     );
