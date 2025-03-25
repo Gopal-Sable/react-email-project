@@ -6,7 +6,7 @@ const Sidebar = ({ loading, filterData, mailBodyData, openMailBody }) => {
     return (
         <aside
             id="email-list"
-            className="flex mx-6 flex-col bg-[var(--bg)] h-[calc(100vh-100px)] overflow-auto"
+            className="flex mx-4 flex-col bg-[var(--bg)] h-[calc(100vh-100px)] overflow-auto"
         >
             {loading ? (
                 <>

@@ -17,7 +17,7 @@ const MailCard = ({ data, handleClick, active }) => {
             <ul>
                 <li>
                     <label>From: </label>
-                    <strong>
+                    <strong className="whitespace-pre-wrap break-all">
                         {from.name} &lt;{from.email}&gt;
                     </strong>
                 </li>
