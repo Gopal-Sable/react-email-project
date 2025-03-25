@@ -38,7 +38,7 @@ function App() {
         });
         let newfilterData = filterData.list.map((mail) => {
             if (mail.id === id) {
-                return { ...mail, favorite: true };
+                return { ...mail, favorite: !mail.favorite };
             }
             return { ...mail };
         });
@@ -81,6 +81,10 @@ function App() {
             setFilterBtn("all");
         }
     };
+
+    const close = () => {
+        setMailBodyData(null);
+    };
     return (
         <>
             <div id="filter-container" className="flex items-center mx-6 my-2">
@@ -89,22 +93,22 @@ function App() {
                     <FilterButton
                         name="All"
                         handleClick={handleFilterClick}
-                        active={filterBtn==="all"}
+                        active={filterBtn === "all"}
                     />
                     <FilterButton
                         name="Unread"
                         handleClick={handleFilterClick}
-                        active={filterBtn==="unread"}
+                        active={filterBtn === "unread"}
                     />
                     <FilterButton
                         name="Read"
                         handleClick={handleFilterClick}
-                        active={filterBtn==="read"}
+                        active={filterBtn === "read"}
                     />
                     <FilterButton
                         name="Favorites"
                         handleClick={handleFilterClick}
-                        active={filterBtn==="favorite"}
+                        active={filterBtn === "favorite"}
                     />
                 </div>
             </div>
@@ -112,7 +116,9 @@ function App() {
             <div
                 id="main"
                 className={`m-2 h-screen ${
-                    mailBodyData ? "grid lg:grid-cols-[30%_70%] md:grid-cols-[40%_60%]" : ""
+                    mailBodyData
+                        ? "grid lg:grid-cols-[30%_70%] md:grid-cols-[40%_60%] sm:grid-cols-1"
+                        : ""
                 }`}
             >
                 {/* Email List (Scrollable) */}
@@ -139,6 +145,7 @@ function App() {
                     <MailBody
                         data={mailBodyData}
                         handleFavorite={changeTofavorite}
+                        close={close}
                     />
                 )}
             </div>

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { EMAIL_BY_ID_URL } from "../../util/constVariables";
 import ProfileName from "./ProfileName";
 
-const MailBody = ({ data, handleFavorite }) => {
+const MailBody = ({ data, handleFavorite, close }) => {
     const { id, from, date, subject, favorite } = data;
     const [mail, setMail] = useState({});
+    const [isFavorite, setIsFavorite] = useState(favorite);
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -41,13 +42,21 @@ const MailBody = ({ data, handleFavorite }) => {
                         </span>
                     </div>
                     <button
-                        disabled={favorite}
                         onClick={() => {
+                            setIsFavorite(!isFavorite);
                             handleFavorite(mail.id);
                         }}
                         className="cursor-pointer bg-[var(--accent)] h-fit m-4 px-2 py-1 rounded-full font-medium text-white"
                     >
-                        {favorite ? "Favorite" : "Mark as favorite"}
+                        {isFavorite
+                            ? "Remove from favorite"
+                            : "Mark as favorite"}
+                    </button>
+                    <button
+                        className="lg:hidden md:hidden xl:hidden sm:block h-fit"
+                        onClick={close}
+                    >
+                        X
                     </button>
                 </div>
                 <div
