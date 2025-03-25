@@ -62,9 +62,9 @@ function App() {
             />
             <section
                 id="main"
-                className={` ${
+                className={`w-full ${
                     mailBodyData
-                        ? "grid lg:grid-cols-[30%_70%] md:grid-cols-[40%_60%] sm:grid-cols-1"
+                        ? "grid lg:grid-cols-[30%_70%] md:grid-cols-[40%_60%]"
                         : ""
                 }`}
             >

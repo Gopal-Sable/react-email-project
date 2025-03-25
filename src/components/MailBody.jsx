@@ -26,7 +26,7 @@ const MailBody = ({ data, handleFavorite, close }) => {
     return loading ? (
         <Loader type="mailBody" />
     ) : (
-        <section className="flex mx-6 mt-2 p-4 overflow-auto bg-white rounded-xl border border-[var(--border)] h-[calc(100vh-150px)] ">
+        <section id="mail-body" className="mx-6 mt-2 p-4 overflow-auto bg-white rounded-xl border border-[var(--border)] flex lg:h-[calc(100vh-150px)] lg:static md:h-[calc(100vh-150px)] md:static sm:h-fit sm:absolute">
             <ProfileName name={from?.name} />
             <div className="mr-8">
                 <header className="flex justify-between">
