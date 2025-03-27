@@ -1,5 +1,5 @@
 import React from "react";
-import Loader from "./Loading";
+import Loader from "./Loader";
 import MailCard from "./MailCard";
 
 const Sidebar = ({ loading, filterData, mailBodyData, openMailBody }) => {

@@ -1,32 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { EMAIL_BY_ID_URL } from "../../util/constVariables";
+import { useState } from "react";
 import ProfileName from "./ProfileName";
-import Loader from "./Loading";
 
 const MailBody = ({ data, handleFavorite, close }) => {
-    const { id, from, date, subject, favorite } = data;
-    const [mail, setMail] = useState({});
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const res = await fetch(EMAIL_BY_ID_URL + id);
-                const data = await res.json();
-                setMail({ ...data, favorite });
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [id]);
+    const [mail, setMail] = useState(data);
+    const { id, from, date, subject, body, favorite } = data;
 
-    return loading ? (
-        <Loader type="mailBody" />
-    ) : (
-        <section id="mail-body" className="mx-6 mt-2 p-4 overflow-auto bg-white rounded-xl border border-[var(--border)] flex lg:h-[calc(100vh-150px)] lg:static md:h-[calc(100vh-150px)] md:static sm:h-fit sm:absolute">
+    return (
+        <section
+            id="mail-body"
+            className="mx-6 mt-2 p-4 overflow-auto bg-white rounded-xl border border-[var(--border)] flex lg:h-[calc(100vh-150px)] lg:static md:h-[calc(100vh-150px)] md:static sm:h-fit sm:absolute"
+        >
             <ProfileName name={from?.name} />
             <div className="mr-8">
                 <header className="flex justify-between">
@@ -46,13 +29,11 @@ const MailBody = ({ data, handleFavorite, close }) => {
                     <button
                         onClick={() => {
                             setMail({ ...mail, favorite: !mail.favorite });
-                            handleFavorite(mail.id);
+                            handleFavorite(id);
                         }}
                         className="cursor-pointer bg-[var(--accent)] h-fit m-4 px-2 py-1 rounded-full font-medium text-white"
                     >
-                        {mail.favorite
-                            ? "Remove from favorite"
-                            : "Mark as favorite"}
+                        {favorite ? "Remove from favorite" : "Mark as favorite"}
                     </button>
                     <button
                         className="lg:hidden md:hidden xl:hidden sm:block h-fit"
@@ -64,7 +45,7 @@ const MailBody = ({ data, handleFavorite, close }) => {
                 <article
                     className="text-justify my-2"
                     dangerouslySetInnerHTML={{
-                        __html: mail?.body?.replace(/<\/p>/g, "</p><br />"),
+                        __html: body?.replace(/<\/p>/g, "</p><br />"),
                     }}
                 />
             </div>

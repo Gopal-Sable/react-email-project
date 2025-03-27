@@ -1,14 +1,11 @@
-import React, { useState } from "react";
-import { filterMails } from "../../util/mailUtils";
+
 import FilterButton from "./FilterButton";
 
-const Header = ({ setFilterData, mails, closeMailBody }) => {
-    const [filterBtn, setFilterBtn] = useState("all");
+const Header = ({ setFilter, closeMailBody,activeFilter }) => {
 
     const handleFilterClick = (filterType) => {
         closeMailBody();
-        setFilterBtn(filterType.toLowerCase());
-        setFilterData(filterMails(mails, filterType));
+        setFilter(filterType);
     };
     return (
         <header id="filter-container" className="flex items-center p-6 mx-6">
@@ -19,7 +16,7 @@ const Header = ({ setFilterData, mails, closeMailBody }) => {
                         key={filter}
                         name={filter}
                         handleClick={handleFilterClick}
-                        active={filterBtn === filter.toLowerCase()}
+                        active={filter===activeFilter}
                     />
                 ))}
             </div>

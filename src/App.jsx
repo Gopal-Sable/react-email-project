@@ -1,52 +1,52 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import MailBody from "./components/MailBody";
-import { EMAIL_URL } from "../util/constVariables";
-import { updateMailState } from "../util/mailUtils.js";
+import { EMAIL_BY_ID_URL, EMAIL_URL } from "../util/constVariables";
+import { filterMails, updateMailState } from "../util/mailUtils.js";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
+import { fetchData } from "../util/fetchMailData.js";
+import Loader from "./components/Loader.jsx";
 
 function App() {
-    const [mailBodyData, setMailBodyData] = useState(null);
     const [mails, setMails] = useState([]);
-    const [filterData, setFilterData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [mailBodyLoading, setMailBodyLoading] = useState(true);
+    const [filter, setFilter] = useState("All");
+    const [mailBodyData, setMailBodyData] = useState(null);
+    let filterData = filterMails(mails, filter, mailBodyData);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true);
-                const res = await fetch(EMAIL_URL);
-                const data = await res.json();
+        fetchData(EMAIL_URL)
+            .then((data) => {
                 const dataAdded = data.list.map((mail) => ({
                     ...mail,
                     favorite: false,
                     read: false,
                 }));
                 setMails(dataAdded);
-                setFilterData(dataAdded);
-            } catch (error) {
-                console.log(error);
-            } finally {
+            })
+            .catch(console.error)
+            .finally(() => {
                 setLoading(false);
-            }
-        };
-        fetchData();
+            });
     }, []);
 
     const changeTofavorite = (id) => {
         setMails((prevMails) => updateMailState(prevMails, id, "favorite"));
-        setFilterData((prevFilterData) =>
-            updateMailState(prevFilterData, id, "favorite")
-        );
     };
 
     const openMailBody = (data) => {
         setMails((prevMails) => updateMailState(prevMails, data.id, "read"));
-        setFilterData((prevFilterData) =>
-            updateMailState(prevFilterData, data.id, "read")
-        );
-        setMailBodyData(data);
+        if (mailBodyData?.id !== data.id) {
+            setMailBodyLoading(true);
+            fetchData(EMAIL_BY_ID_URL + data.id)
+                .then((res) => {
+                    setMailBodyData({ ...data, ...res });
+                })
+                .catch(console.log)
+                .finally(() => setMailBodyLoading(false));
+        }
     };
 
     const closeMailBody = () => {
@@ -56,9 +56,9 @@ function App() {
     return (
         <main className="h-screen ">
             <Header
-                setFilterData={setFilterData}
                 closeMailBody={closeMailBody}
-                mails={mails}
+                setFilter={setFilter}
+                activeFilter={filter}
             />
             <section
                 id="main"
@@ -75,13 +75,16 @@ function App() {
                     openMailBody={openMailBody}
                 />
 
-                {mailBodyData && (
-                    <MailBody
-                        data={mailBodyData}
-                        handleFavorite={changeTofavorite}
-                        close={closeMailBody}
-                    />
-                )}
+                {mailBodyData &&
+                    (mailBodyLoading ? (
+                        <Loader type={"mailBody"} />
+                    ) : (
+                        <MailBody
+                            data={mailBodyData}
+                            handleFavorite={changeTofavorite}
+                            close={closeMailBody}
+                        />
+                    ))}
             </section>
         </main>
     );

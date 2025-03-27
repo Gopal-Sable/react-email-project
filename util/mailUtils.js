@@ -9,14 +9,16 @@ export const updateMailState = (mails, id, field) => {
     );
 };
 
-export const filterMails = (mails, filterType) => {
+export const filterMails = (mails, filterType, selectedMail) => {
     switch (filterType) {
         case "Read":
             return mails.filter((mail) => mail.read);
         case "Unread":
-            return mails.filter((mail) => !mail.read);
+            return mails.filter(
+                (mail) => selectedMail?.id === mail.id || !mail.read
+            );
         case "Favorites":
-            return mails.filter((mail) => mail.favorite);
+            return mails.filter((mail) => selectedMail?.id === mail.id || mail.favorite);
         default:
             return mails;
     }
