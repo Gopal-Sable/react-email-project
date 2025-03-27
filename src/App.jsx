@@ -14,6 +14,7 @@ function App() {
     const [mailBodyLoading, setMailBodyLoading] = useState(true);
     const [filter, setFilter] = useState("All");
     const [mailBodyData, setMailBodyData] = useState(null);
+
     let filterData = filterMails(mails, filter, mailBodyData);
 
     useEffect(() => {
@@ -34,6 +35,7 @@ function App() {
 
     const changeTofavorite = (id) => {
         setMails((prevMails) => updateMailState(prevMails, id, "favorite"));
+        setMailBodyData({ ...mailBodyData, favorite: !mailBodyData.favorite });
     };
 
     const openMailBody = (data) => {

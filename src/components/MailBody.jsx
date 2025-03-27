@@ -2,7 +2,6 @@ import { useState } from "react";
 import ProfileName from "./ProfileName";
 
 const MailBody = ({ data, handleFavorite, close }) => {
-    const [mail, setMail] = useState(data);
     const { id, from, date, subject, body, favorite } = data;
 
     return (
@@ -28,7 +27,6 @@ const MailBody = ({ data, handleFavorite, close }) => {
                     </div>
                     <button
                         onClick={() => {
-                            setMail({ ...mail, favorite: !mail.favorite });
                             handleFavorite(id);
                         }}
                         className="cursor-pointer bg-[var(--accent)] h-fit m-4 px-2 py-1 rounded-full font-medium text-white"
